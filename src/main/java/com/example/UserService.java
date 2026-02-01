@@ -33,7 +33,7 @@ public class UserService {
                     LOGGER.log(Level.INFO, "Found user {0}, email={1}", new Object[] { id, email });
                 }
                 if (!found) {
-                    LOGGER.fine("No user found for " + username);
+                    LOGGER.log(Level.FINE, "No user found for {0}", username);
                 }
             }
         }
