@@ -20,7 +20,10 @@ public class UserService {
         String query = "SELECT id, name, email FROM users WHERE name = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
                 PreparedStatement ps = conn.prepareStatement(query)) {
+
+            // Bind parameters before executing the query
             ps.setString(1, username);
+
             try (ResultSet rs = ps.executeQuery()) {
                 boolean found = false;
                 while (rs.next()) {
@@ -29,8 +32,9 @@ public class UserService {
                     String email = rs.getString("email");
                     LOGGER.log(Level.INFO, "Found user {0}, email={1}", new Object[] { id, email });
                 }
-                if (!found)
+                if (!found) {
                     LOGGER.fine("No user found for " + username);
+                }
             }
         }
     }
