@@ -41,7 +41,7 @@ public class UserService {
     }
 
     public void notUsed() {
-        System.out.println("I am never called");
+        LOGGER.log(Level.WARNING, "I am never called");
     }
 
     public void deleteUser(String username) throws SQLException {
