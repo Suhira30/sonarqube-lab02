@@ -19,7 +19,7 @@ public class UserService {
 
     public void findUser(String username) throws java.sql.SQLException {
         if (this.connection == null) {
-            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/db", "root", password)) {
+            try (Connection conn = getDatabaseConnection()) {
                 findUserInternal(conn, username);
             }
         } else {
@@ -37,7 +37,7 @@ public class UserService {
 
     public void deleteUser(String username) throws java.sql.SQLException {
         if (this.connection == null) {
-            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/db", "root", password)) {
+            try (Connection conn = getDatabaseConnection()) {
                 deleteUserInternal(conn, username);
             }
         } else {
@@ -53,4 +53,7 @@ public class UserService {
         }
     }
 
+    protected Connection getDatabaseConnection() throws java.sql.SQLException {
+        return DriverManager.getConnection("jdbc:mysql://localhost/db", "root", password);
+    }
 }

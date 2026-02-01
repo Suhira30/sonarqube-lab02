@@ -39,4 +39,17 @@ class UserServiceTest {
         verify(preparedStatement).setString(1, "testuser");
         verify(preparedStatement).executeUpdate();
     }
+
+    @Test
+    void findUserWithNewConnection() throws Exception {
+        UserService userService = spy(new UserService());
+        doReturn(connection).when(userService).getDatabaseConnection();
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+
+        userService.findUser("testuser");
+
+        verify(userService).getDatabaseConnection();
+        verify(preparedStatement).setString(1, "testuser");
+        verify(preparedStatement).executeQuery();
+    }
 }
