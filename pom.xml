@@ -48,9 +48,6 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
-                        <configuration>
-                            <xml>true</xml>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
