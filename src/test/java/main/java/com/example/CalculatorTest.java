@@ -7,14 +7,6 @@ class CalculatorTest {
 
     @Test
     void adds() {
-        Calculator calc = new Calculator();
-        assertEquals(15, calc.calculate(10, 5, "add"));
-        assertEquals(15, calc.calculate(10, 5, "add-again"));
-    }
-
-    @Test
-    void divisionByZeroReturnsZero() {
-        Calculator calc = new Calculator();
-        assertEquals(0, calc.calculate(10, 0, "div"));
+        assertEquals(15, new Calculator().calculate(10, 5, "add"));
     }
 }

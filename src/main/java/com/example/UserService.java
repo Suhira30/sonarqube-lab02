@@ -24,18 +24,13 @@ public class UserService {
             try (ResultSet rs = ps.executeQuery()) {
                 boolean found = false;
                 while (rs.next()) {
-                    int id = rs.getInt("id");
-                    String name = rs.getString("name");
-                    String email = rs.getString("email");
-                    if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.log(Level.INFO, "Found user: id={0}, name={1}, email={2}",
-                                new Object[] { id, name, email });
-                    }
                     found = true;
+                    int id = rs.getInt("id");
+                    String email = rs.getString("email");
+                    LOGGER.log(Level.INFO, "Found user {0}, email={1}", new Object[] { id, email });
                 }
-                if (!found && LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("No user found with name: " + username);
-                }
+                if (!found)
+                    LOGGER.fine("No user found for " + username);
             }
         }
     }
