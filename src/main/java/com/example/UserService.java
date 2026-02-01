@@ -1,29 +1,59 @@
-package main.java.com.example;
+package com.example;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
 
 public class UserService {
 
-    // SECURITY ISSUE: Hardcoded credentials
-    private String password = "admin123";
+    private String password = System.getenv("DB_PASSWORD");
 
-    // VULNERABILITY: SQL Injection
-    public void findUser(String username) throws Exception {
+    private Connection connection;
 
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/db",
-                "root", password);
-
-        Statement st = conn.createStatement();
-
-        String query = "SELECT * FROM users WHERE name = '" + username + "'";
-
-        st.executeQuery(query);
+    public UserService() {
+        // Default constructor
     }
 
-    // SMELL: Unused method
-    public void notUsed() {
-        System.out.println("I am never called");
+    public UserService(Connection connection) {
+        this.connection = connection;
+    }
+
+    public void findUser(String username) throws java.sql.SQLException {
+        if (this.connection == null) {
+            try (Connection conn = getDatabaseConnection()) {
+                findUserInternal(conn, username);
+            }
+        } else {
+            findUserInternal(this.connection, username);
+        }
+    }
+
+    private void findUserInternal(Connection conn, String username) throws java.sql.SQLException {
+        String query = "SELECT name FROM users WHERE name = ?";
+        try (java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, username);
+            stmt.executeQuery();
+        }
+    }
+
+    public void deleteUser(String username) throws java.sql.SQLException {
+        if (this.connection == null) {
+            try (Connection conn = getDatabaseConnection()) {
+                deleteUserInternal(conn, username);
+            }
+        } else {
+            deleteUserInternal(this.connection, username);
+        }
+    }
+
+    private void deleteUserInternal(Connection conn, String username) throws java.sql.SQLException {
+        String query = "DELETE FROM users WHERE name = ?";
+        try (java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, username);
+            stmt.executeUpdate();
+        }
+    }
+
+    protected Connection getDatabaseConnection() throws java.sql.SQLException {
+        return DriverManager.getConnection("jdbc:mysql://localhost/db", "root", password);
     }
 }
