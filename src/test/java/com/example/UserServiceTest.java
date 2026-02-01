@@ -28,4 +28,15 @@ class UserServiceTest {
         verify(preparedStatement).setString(1, "testuser");
         verify(preparedStatement).executeQuery();
     }
+
+    @Test
+    void deleteUser() throws Exception {
+        UserService userService = new UserService(connection);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+
+        userService.deleteUser("testuser");
+
+        verify(preparedStatement).setString(1, "testuser");
+        verify(preparedStatement).executeUpdate();
+    }
 }
