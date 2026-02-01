@@ -18,13 +18,17 @@ public class UserService {
     }
 
     public void findUser(String username) throws java.sql.SQLException {
-        Connection conn = this.connection;
-        if (conn == null) {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/db", "root", password);
+        if (this.connection == null) {
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/db", "root", password)) {
+                findUserInternal(conn, username);
+            }
+        } else {
+            findUserInternal(this.connection, username);
         }
+    }
 
+    private void findUserInternal(Connection conn, String username) throws java.sql.SQLException {
         String query = "SELECT name FROM users WHERE name = ?";
-
         try (java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, username);
             stmt.executeQuery();
@@ -32,11 +36,16 @@ public class UserService {
     }
 
     public void deleteUser(String username) throws java.sql.SQLException {
-        Connection conn = this.connection;
-        if (conn == null) {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/db", "root", password);
+        if (this.connection == null) {
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/db", "root", password)) {
+                deleteUserInternal(conn, username);
+            }
+        } else {
+            deleteUserInternal(this.connection, username);
         }
+    }
 
+    private void deleteUserInternal(Connection conn, String username) throws java.sql.SQLException {
         String query = "DELETE FROM users WHERE name = ?";
         try (java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, username);
