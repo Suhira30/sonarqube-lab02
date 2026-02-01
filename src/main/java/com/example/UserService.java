@@ -5,10 +5,8 @@ import java.sql.DriverManager;
 
 public class UserService {
 
-    // SECURITY ISSUE: Hardcoded credentials
-    private String password = "admin123";
+    private String password = System.getenv("DB_PASSWORD");
 
-    // VULNERABILITY: SQL Injection
     private Connection connection;
 
     public UserService() {
@@ -19,13 +17,13 @@ public class UserService {
         this.connection = connection;
     }
 
-    public void findUser(String username) throws Exception {
+    public void findUser(String username) throws java.sql.SQLException {
         Connection conn = this.connection;
         if (conn == null) {
             conn = DriverManager.getConnection("jdbc:mysql://localhost/db", "root", password);
         }
 
-        String query = "SELECT * FROM users WHERE name = ?";
+        String query = "SELECT name FROM users WHERE name = ?";
 
         try (java.sql.PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, username);
@@ -33,7 +31,7 @@ public class UserService {
         }
     }
 
-    public void deleteUser(String username) throws Exception {
+    public void deleteUser(String username) throws java.sql.SQLException {
         Connection conn = this.connection;
         if (conn == null) {
             conn = DriverManager.getConnection("jdbc:mysql://localhost/db", "root", password);

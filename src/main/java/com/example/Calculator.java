@@ -3,25 +3,59 @@ package com.example;
 public class Calculator {
 
     // Code Smell: Long method + high complexity
-    public int calculate(int a, int b, String op) {
-
-        switch (op) {
-            case "add":
+    private enum Operator {
+        ADD("add") {
+            @Override
+            int apply(int a, int b) {
                 return a + b;
-            case "sub":
+            }
+        },
+        SUB("sub") {
+            @Override
+            int apply(int a, int b) {
                 return a - b;
-            case "mul":
+            }
+        },
+        MUL("mul") {
+            @Override
+            int apply(int a, int b) {
                 return a * b;
-            case "div":
-                if (b == 0) {
+            }
+        },
+        DIV("div") {
+            @Override
+            int apply(int a, int b) {
+                if (b == 0)
                     throw new IllegalArgumentException("Cannot divide by zero");
-                }
                 return a / b;
-            case "mod":
+            }
+        },
+        MOD("mod") {
+            @Override
+            int apply(int a, int b) {
                 return a % b;
-            default:
-                throw new IllegalArgumentException("Invalid operator: " + op);
+            }
+        };
+
+        private final String symbol;
+
+        Operator(String symbol) {
+            this.symbol = symbol;
         }
+
+        abstract int apply(int a, int b);
+
+        static Operator from(String op) {
+            for (Operator operator : values()) {
+                if (operator.symbol.equals(op))
+                    return operator;
+            }
+            throw new IllegalArgumentException("Invalid operator: " + op);
+        }
+    }
+
+    public int calculate(int a, int b, String op) {
+        return Operator.from(op).apply(a, b);
     }
 
 }

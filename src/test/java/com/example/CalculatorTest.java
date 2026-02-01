@@ -27,7 +27,8 @@ class CalculatorTest {
 
     @Test
     void divByZero() {
-        assertThrows(IllegalArgumentException.class, () -> new Calculator().calculate(10, 0, "div"));
+        Calculator calculator = new Calculator();
+        assertThrows(IllegalArgumentException.class, () -> calculator.calculate(10, 0, "div"));
     }
 
     @Test
@@ -37,6 +38,7 @@ class CalculatorTest {
 
     @Test
     void invalidOp() {
-        assertThrows(IllegalArgumentException.class, () -> new Calculator().calculate(10, 5, "unknown"));
+        Calculator calculator = new Calculator();
+        assertThrows(IllegalArgumentException.class, () -> calculator.calculate(10, 5, "unknown"));
     }
 }
