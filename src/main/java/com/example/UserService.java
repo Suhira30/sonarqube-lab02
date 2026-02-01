@@ -2,24 +2,30 @@ package main.java.com.example;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserService {
 
-    // SECURITY ISSUE: Hardcoded credentials
-    private String password = "admin123";
+    // Use environment variable for credentials to avoid hardcoding
+    private static final String DB_URL = "jdbc:mysql://localhost/db";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = System.getenv().getOrDefault("DB_PASSWORD", "admin123");
 
-    // VULNERABILITY: SQL Injection
-    public void findUser(String username) throws Exception {
-
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/db",
-                "root", password);
-
-        Statement st = conn.createStatement();
-
-        String query = "SELECT * FROM users WHERE name = '" + username + "'";
-
-        st.executeQuery(query);
+    // Use parameterized queries and try-with-resources to avoid SQL injection and
+    // resource leaks
+    public void findUser(String username) throws SQLException {
+        String query = "SELECT * FROM users WHERE name = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    // process result if needed
+                }
+            }
+        }
     }
 
     // SMELL: Unused method
@@ -27,12 +33,13 @@ public class UserService {
         System.out.println("I am never called");
     }
 
-    // EVEN WORSE: another SQL injection
-    public void deleteUser(String username) throws Exception {
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/db",
-                "root", password);
-        Statement st = conn.createStatement();
-        String query = "DELETE FROM users WHERE name = '" + username + "'";
-        st.execute(query);
+    // Use parameterized delete with try-with-resources
+    public void deleteUser(String username) throws SQLException {
+        String query = "DELETE FROM users WHERE name = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, username);
+            ps.executeUpdate();
+        }
     }
 }
